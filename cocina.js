@@ -26,16 +26,68 @@ const productoscocina = [
     }
 ];
 
+// ===== FUNCIONES CRUD =====
 
-function imprimirProductos() {
-    console.log("PRODUCTOS DE COCINA");
-    productoscocina.forEach((producto, index) => {
-        console.log(`${index + 1}. ${producto.nombre}`);
-        console.log(`   ID: ${producto.id}`);
-        console.log(`   Precio: $${producto.precio}`);
-        console.log("---");
+// CREATE - Agregar nuevo producto
+function agregar() {
+    const nombre = document.getElementById("nombre").value;
+    const precio = parseFloat(document.getElementById("precio").value);
+
+    if (!nombre || !precio) {
+        return;
+    }
+
+    const nuevoId = Math.max(...productoscocina.map(p => p.id)) + 1;
+    productoscocina.push({ id: nuevoId, nombre, precio });
+    
+    document.getElementById("nombre").value = "";
+    document.getElementById("precio").value = "";
+}
+
+// READ - Listar todos
+function listar() {
+    let html = "";
+    productoscocina.forEach(p => {
+        html += "<p>ID: " + p.id + " | " + p.nombre + " | $" + p.precio + "</p>";
     });
+    document.getElementById("lista").innerHTML = html;
+}
+
+// READ - Buscar por ID
+function buscar() {
+    const id = parseInt(document.getElementById("buscaId").value);
+    const producto = productoscocina.find(p => p.id === id);
+    
+    if (producto) {
+        document.getElementById("resultado").innerHTML = 
+            "<p>" + producto.nombre + " - $" + producto.precio + "</p>";
+    } else {
+        document.getElementById("resultado").innerHTML = "<p>No encontrado</p>";
+    }
 }
 
 
-imprimirProductos();
+function actualizar() {
+    const id = parseInt(document.getElementById("updateId").value);
+    const nuevoPrecio = parseFloat(document.getElementById("updatePrecio").value);
+    
+    const producto = productoscocina.find(p => p.id === id);
+    
+    if (producto) {
+        producto.precio = nuevoPrecio;
+        document.getElementById("updateId").value = "";
+        document.getElementById("updatePrecio").value = "";
+    }
+}
+
+
+function eliminar() {
+    const id = parseInt(document.getElementById("deleteId").value);
+    const index = productoscocina.findIndex(p => p.id === id);
+    
+    if (index !== -1) {
+        productoscocina.splice(index, 1);
+        document.getElementById("deleteId").value = "";
+    }
+}
+

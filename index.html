@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD Productos</title>
+</head>
+<body>
+    <h1>Productos Cocina</h1>
+
+    <h2>Agregar</h2>
+    <input type="text" id="nombre" placeholder="Nombre">
+    <input type="number" id="precio" placeholder="Precio" step="0.01">
+    <button onclick="agregar()">Agregar</button>
+
+    <h2>Listar</h2>
+    <button onclick="listar()">Mostrar</button>
+    <div id="lista"></div>
+
+    <h2>Buscar</h2>
+    <input type="number" id="buscaId" placeholder="ID">
+    <button onclick="buscar()">Buscar</button>
+    <div id="resultado"></div>
+
+    <h2>Actualizar Precio</h2>
+    <input type="number" id="updateId" placeholder="ID">
+    <input type="number" id="updatePrecio" placeholder="Precio" step="0.01">
+    <button onclick="actualizar()">Actualizar</button>
+
+    <h2>Eliminar</h2>
+    <input type="number" id="deleteId" placeholder="ID">
+    <button onclick="eliminar()">Eliminar</button>
+
+    <script src="cocina.js"></script>
+</body>
+</html>
