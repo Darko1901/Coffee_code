@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffe Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f0eb;
+            display: flex;
+            justify-content: center;
+            padding: 40px 16px;
+        }
+
+        .menu-container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 480px;
+            overflow: hidden;
+        }
+
+        .menu-header {
+            background-color: #c0392b;
+            color: white;
+            text-align: center;
+            padding: 28px 20px;
+        }
+
+        .menu-header h1 {
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+
+        .menu-header p {
+            margin-top: 6px;
+            font-size: 0.9rem;
+            opacity: 0.85;
+        }
+
+        .producto-lista {
+            list-style: none;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .producto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fdf6f0;
+            border: 1px solid #e8ddd4;
+            border-radius: 10px;
+            padding: 16px 20px;
+        }
+
+        .producto-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .producto-nombre {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .producto-id {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        .producto-precio {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-container">
+        <div class="menu-header">
+            <h1>Coffe Code</h1>
+            <p>Selecciona lo que deseas ordenar</p>
+        </div>
+
+        <ul class="producto-lista" id="lista-productos"></ul>
+    </div>
+
+    <script src="cocina.js"></script>
+    <script>
+        const lista = document.getElementById("lista-productos");
+
+        productoscocina.forEach(producto => {
+            lista.innerHTML += `
+                <li class="producto-item">
+                    <div class="producto-info">
+                        <span class="producto-nombre">${producto.nombre}</span>
+                        <span class="producto-id">ID: ${producto.id}</span>
+                    </div>
+                    <span class="producto-precio">$${producto.precio.toFixed(2)}</span>
+                </li>
+            `;
+        });
+    </script>
+
+</body>
+</html>
