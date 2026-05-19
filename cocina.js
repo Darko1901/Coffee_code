@@ -97,6 +97,12 @@ function buscarFilterCaros() {
 
 function buscarFilterPorTipo() {
     const tipo = document.getElementById("filtroTipo").value;
+    
+    if (!tipo) {
+        document.getElementById("lista").innerHTML = "<p>Por favor selecciona un tipo</p>";
+        return;
+    }
+    
     const porTipo = productoscocina.filter(p => p.tipo === tipo);
     let html = "";
     
