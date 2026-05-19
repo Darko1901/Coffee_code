@@ -19,15 +19,33 @@
             padding: 40px 16px;
         }
 
+        .app-layout {
+            display: flex;
+            gap: 24px;
+            width: 100%;
+            max-width: 1100px;
+            align-items: flex-start;
+        }
+
+        /* Columnas */
         .menu-container {
+            flex: 1;
             background: #fff;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 520px;
             overflow: hidden;
         }
 
+        .caja-container {
+            width: 380px;
+            flex-shrink: 0;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* Header compartido */
         .menu-header {
             background-color: #c0392b;
             color: white;
@@ -46,7 +64,7 @@
             opacity: 0.85;
         }
 
-        /* Secciones CRUD */
+        /* Secciones */
         .seccion {
             padding: 20px;
             border-bottom: 1px solid #ece5de;
@@ -66,7 +84,14 @@
             flex-wrap: wrap;
         }
 
-        input {
+        .fila-botones {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        input, select {
             flex: 1;
             min-width: 100px;
             padding: 10px 12px;
@@ -74,9 +99,10 @@
             border-radius: 8px;
             font-size: 0.9rem;
             outline: none;
+            background: #fff;
         }
 
-        input:focus {
+        input:focus, select:focus {
             border-color: #c0392b;
         }
 
@@ -88,10 +114,21 @@
             border-radius: 8px;
             font-size: 0.9rem;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         button:hover {
             background-color: #a93226;
+        }
+
+        button.secundario {
+            background-color: #fff;
+            color: #c0392b;
+            border: 1.5px solid #c0392b;
+        }
+
+        button.secundario:hover {
+            background-color: #fdf0ef;
         }
 
         /* Lista de productos */
@@ -102,7 +139,7 @@
             margin-top: 12px;
         }
 
-        #lista .producto-item {
+        .producto-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -112,66 +149,96 @@
             padding: 14px 18px;
         }
 
-        #lista .producto-info {
+        .producto-info {
             display: flex;
             flex-direction: column;
             gap: 3px;
         }
 
-        #lista .producto-nombre {
+        .producto-nombre {
             font-size: 0.95rem;
             font-weight: 600;
             color: #2c2c2c;
         }
 
-        #lista .producto-id {
+        .producto-id {
             font-size: 0.75rem;
             color: #999;
         }
 
-        #lista .producto-precio {
+        .producto-precio {
             font-size: 1rem;
             font-weight: 700;
             color: #c0392b;
         }
 
-        /* Resultado de búsqueda */
+        /* Resultado búsqueda */
         #resultado {
             margin-top: 12px;
         }
 
-        #resultado .producto-item {
+        .no-encontrado {
+            font-size: 0.9rem;
+            color: #999;
+            text-align: center;
+            padding: 12px;
+        }
+
+        /* Pedidos en caja */
+        #pedidos {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .pedido-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background-color: #fdf6f0;
             border: 1px solid #e8ddd4;
-            border-radius: 10px;
-            padding: 14px 18px;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
         }
 
-        #resultado .producto-nombre {
-            font-size: 0.95rem;
+        .pedido-nombre {
             font-weight: 600;
             color: #2c2c2c;
         }
 
-        #resultado .producto-id {
-            font-size: 0.75rem;
-            color: #999;
-        }
-
-        #resultado .producto-precio {
-            font-size: 1rem;
+        .pedido-precio {
             font-weight: 700;
             color: #c0392b;
         }
 
-        #resultado .no-encontrado {
-            font-size: 0.9rem;
-            color: #999;
-            text-align: center;
-            padding: 12px;
+        /* Totales */
+        .seccion-total {
+            padding: 16px 20px;
+            border-bottom: 1px solid #ece5de;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .seccion-total h2 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #c0392b;
+            margin: 0;
+        }
+
+        .seccion-total span {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .seccion-total.total-final span {
+            font-weight: 700;
+            color: #c0392b;
+            font-size: 1.1rem;
         }
 
         /* Promociones */
@@ -240,10 +307,22 @@
             font-weight: 700;
             color: #c0392b;
         }
+
+        @media (max-width: 800px) {
+            .app-layout {
+                flex-direction: column;
+            }
+            .caja-container {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 
+<div class="app-layout">
+
+    <!-- ===== COLUMNA IZQUIERDA: MENÚ ===== -->
     <div class="menu-container">
         <div class="menu-header">
             <h1>Coffe Code</h1>
@@ -306,24 +385,28 @@
             </div>
         </div>
 
-        <!-- CREATE -->
+        <!-- AGREGAR PRODUCTO -->
         <div class="seccion">
             <h2>Agregar producto</h2>
             <div class="fila-inputs">
                 <input type="text" id="nombre" placeholder="Nombre del producto">
                 <input type="number" id="precio" placeholder="Precio" step="0.01">
-                <button onclick="agregar(); listar()">Agregar</button>
+                <button onclick="agregar(); listar(); actualizarSelect()">Agregar</button>
             </div>
         </div>
 
-        <!-- READ - Listar -->
+        <!-- LISTA DE PRODUCTOS -->
         <div class="seccion">
             <h2>Lista de productos</h2>
-            <button onclick="listar()">Mostrar todos</button>
+            <div class="fila-botones">
+                <button onclick="listar()">Mostrar todos</button>
+                <button class="secundario" onclick="listarBaratos()">Cocina económica</button>
+                <button class="secundario" onclick="listarCaros()">Cocina cara</button>
+            </div>
             <div id="lista"></div>
         </div>
 
-        <!-- READ - Buscar -->
+        <!-- BUSCAR POR ID -->
         <div class="seccion">
             <h2>Buscar por ID</h2>
             <div class="fila-inputs">
@@ -333,69 +416,162 @@
             <div id="resultado"></div>
         </div>
 
-        <!-- UPDATE -->
+        <!-- ACTUALIZAR PRECIO -->
         <div class="seccion">
             <h2>Actualizar precio</h2>
             <div class="fila-inputs">
                 <input type="number" id="updateId" placeholder="ID del producto">
                 <input type="number" id="updatePrecio" placeholder="Nuevo precio" step="0.01">
-                <button onclick="actualizar(); listar()">Actualizar</button>
+                <button onclick="actualizar(); listar(); actualizarSelect()">Actualizar</button>
             </div>
         </div>
 
-        <!-- DELETE -->
+        <!-- ELIMINAR -->
         <div class="seccion">
             <h2>Eliminar producto</h2>
             <div class="fila-inputs">
                 <input type="number" id="deleteId" placeholder="ID del producto">
-                <button onclick="eliminar(); listar()">Eliminar</button>
+                <button onclick="eliminar(); listar(); actualizarSelect()">Eliminar</button>
             </div>
         </div>
 
     </div>
 
-    <script src="cocina.js"></script>
-    <script>
-        // Sobreescribe listar() para usar tarjetas estilizadas
-        function listar() {
-            let html = "";
-            productoscocina.forEach(p => {
-                html += `
-                    <div class="producto-item">
-                        <div class="producto-info">
-                            <span class="producto-nombre">${p.nombre}</span>
-                            <span class="producto-id">ID: ${p.id}</span>
-                        </div>
-                        <span class="producto-precio">$${p.precio.toFixed(2)}</span>
+    <!-- ===== COLUMNA DERECHA: CAJA ===== -->
+    <div class="caja-container">
+        <div class="menu-header">
+            <h1>Caja</h1>
+            <p>Resumen del pedido</p>
+        </div>
+
+        <!-- ORDENAR -->
+        <div class="seccion">
+            <h2>Ordenar producto</h2>
+            <div class="fila-inputs">
+                <select id="selectProducto"></select>
+                <button onclick="agregarPedido()">Agregar</button>
+            </div>
+        </div>
+
+        <!-- PEDIDOS REALIZADOS -->
+        <div class="seccion">
+            <h2>Pedidos realizados</h2>
+            <div id="pedidos"></div>
+        </div>
+
+        <!-- SUBTOTAL -->
+        <div class="seccion-total">
+            <h2>Subtotal</h2>
+            <span id="subtotal"></span>
+        </div>
+
+        <!-- IVA -->
+        <div class="seccion-total">
+            <h2>IVA (16%)</h2>
+            <span id="iva"></span>
+        </div>
+
+        <!-- TOTAL -->
+        <div class="seccion-total total-final">
+            <h2>Total</h2>
+            <span id="total"></span>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="cocina.js"></script>
+<script>
+    const pedidos = [];
+
+    function renderLista(productos) {
+        let html = "";
+        productos.forEach(p => {
+            html += `
+                <div class="producto-item">
+                    <div class="producto-info">
+                        <span class="producto-nombre">${p.nombre}</span>
+                        <span class="producto-id">ID: ${p.id}</span>
                     </div>
-                `;
-            });
-            document.getElementById("lista").innerHTML = html;
+                    <span class="producto-precio">$${p.precio.toFixed(2)}</span>
+                </div>
+            `;
+        });
+        document.getElementById("lista").innerHTML = html;
+    }
+
+    function listar() {
+        renderLista(productoscocina);
+    }
+
+    function listarBaratos() {
+        renderLista(productoscocina.filter(p => p.precio < 40));
+    }
+
+    function listarCaros() {
+        renderLista(productoscocina.filter(p => p.precio >= 40));
+    }
+
+    function buscar() {
+        const id = parseInt(document.getElementById("buscaId").value);
+        const producto = productoscocina.find(p => p.id === id);
+        if (producto) {
+            document.getElementById("resultado").innerHTML = `
+                <div class="producto-item">
+                    <div class="producto-info">
+                        <span class="producto-nombre">${producto.nombre}</span>
+                        <span class="producto-id">ID: ${producto.id}</span>
+                    </div>
+                    <span class="producto-precio">$${producto.precio.toFixed(2)}</span>
+                </div>
+            `;
+        } else {
+            document.getElementById("resultado").innerHTML =
+                `<p class="no-encontrado">Producto no encontrado</p>`;
+        }
+    }
+
+    function actualizarSelect() {
+        const select = document.getElementById("selectProducto");
+        select.innerHTML = productoscocina
+            .map(p => `<option value="${p.id}">${p.nombre} - $${p.precio.toFixed(2)}</option>`)
+            .join("");
+    }
+
+    function agregarPedido() {
+        const id = parseInt(document.getElementById("selectProducto").value);
+        const producto = productoscocina.find(p => p.id === id);
+        if (!producto) return;
+        pedidos.push(producto);
+        renderPedidos();
+    }
+
+    function renderPedidos() {
+        const contenedor = document.getElementById("pedidos");
+        if (pedidos.length === 0) {
+            contenedor.innerHTML = "";
+        } else {
+            contenedor.innerHTML = pedidos.map(p => `
+                <div class="pedido-item">
+                    <span class="pedido-nombre">${p.nombre}</span>
+                    <span class="pedido-precio">$${p.precio.toFixed(2)}</span>
+                </div>
+            `).join("");
         }
 
-        // Sobreescribe buscar() para usar tarjetas estilizadas
-        function buscar() {
-            const id = parseInt(document.getElementById("buscaId").value);
-            const producto = productoscocina.find(p => p.id === id);
+        const subtotal = pedidos.reduce((sum, p) => sum + p.precio, 0);
+        const iva = subtotal * 0.16;
+        const total = subtotal + iva;
 
-            if (producto) {
-                document.getElementById("resultado").innerHTML = `
-                    <div class="producto-item">
-                        <div class="producto-info">
-                            <span class="producto-nombre">${producto.nombre}</span>
-                            <span class="producto-id">ID: ${producto.id}</span>
-                        </div>
-                        <span class="producto-precio">$${producto.precio.toFixed(2)}</span>
-                    </div>
-                `;
-            } else {
-                document.getElementById("resultado").innerHTML =
-                    `<p class="no-encontrado">Producto no encontrado</p>`;
-            }
-        }
+        document.getElementById("subtotal").textContent = subtotal > 0 ? `$${subtotal.toFixed(2)}` : "";
+        document.getElementById("iva").textContent = iva > 0 ? `$${iva.toFixed(2)}` : "";
+        document.getElementById("total").textContent = total > 0 ? `$${total.toFixed(2)}` : "";
+    }
 
-        listar();
-    </script>
+    listar();
+    actualizarSelect();
+</script>
 
 </body>
 </html>
