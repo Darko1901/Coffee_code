@@ -16,7 +16,8 @@ function agregarPedido() {
 
     if (producto) {
         pedidos.push(producto);
-        console.log("Pedido agregado:", producto.nombre);
+        const { nombre } = producto; // destructuring
+        console.log("Pedido agregado:", nombre);
         actualizarVista();
     }
 }
@@ -25,21 +26,26 @@ function agregarPedido() {
 function actualizarVista() {
     const cuerpo = document.getElementById("cuerpo-tabla");
     cuerpo.innerHTML = "";
-    total = 0;
 
     for (let i = 0; i < pedidos.length; i++) {
-        total = total + pedidos[i].precio;
+        const { id, nombre, precio } = pedidos[i]; // destructuring
         cuerpo.innerHTML += `
             <div class="producto-item">
                 <div class="producto-info">
-                    <span class="producto-nombre">${pedidos[i].nombre}</span>
-                    <span class="producto-id">ID: ${pedidos[i].id}</span>
+                    <span class="producto-nombre">${nombre}</span>
+                    <span class="producto-id">ID: ${id}</span>
                 </div>
-                <span class="producto-precio">$${pedidos[i].precio.toFixed(2)}</span>
+                <span class="producto-precio">$${precio.toFixed(2)}</span>
             </div>
         `;
     }
 
-    console.log("Total del pedido: $" + total.toFixed(2));
-    document.getElementById("total").textContent = "$" + total.toFixed(2);
+    // reduce con destructuring para calcular subtotal
+    const subtotal = pedidos.reduce((acumulado, { precio }) => acumulado + precio, 0);
+    const iva = subtotal * 0.16;
+    total = subtotal + iva;
+
+    document.getElementById("subtotal").textContent = "$" + subtotal.toFixed(2);
+    document.getElementById("iva").textContent      = "$" + iva.toFixed(2);
+    document.getElementById("total").textContent    = "$" + total.toFixed(2);
 }
