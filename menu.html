@@ -173,6 +173,73 @@
             text-align: center;
             padding: 12px;
         }
+
+        /* Promociones */
+        .promo-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-top: 12px;
+        }
+
+        .promo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff8e1;
+            border: 1px solid #f5c518;
+            border-radius: 10px;
+            padding: 14px 18px;
+            position: relative;
+        }
+
+        .promo-badge {
+            position: absolute;
+            top: -10px;
+            right: 14px;
+            background-color: #f5c518;
+            color: #2c2c2c;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .promo-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .promo-nombre {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .promo-detalle {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .promo-precios {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .promo-precio-antes {
+            font-size: 0.75rem;
+            color: #bbb;
+            text-decoration: line-through;
+        }
+
+        .promo-precio-ahora {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #c0392b;
+        }
     </style>
 </head>
 <body>
@@ -181,6 +248,62 @@
         <div class="menu-header">
             <h1>Coffe Code</h1>
             <p>Gestión de productos de cocina</p>
+        </div>
+
+        <!-- PROMOCIONES -->
+        <div class="seccion">
+            <h2>Promociones del día</h2>
+            <div class="promo-lista">
+
+                <div class="promo-item">
+                    <span class="promo-badge">Ahorra $8.98</span>
+                    <div class="promo-info">
+                        <span class="promo-nombre">Combo Mexicano</span>
+                        <span class="promo-detalle">Enchiladas verdes + Tacos dorados</span>
+                    </div>
+                    <div class="promo-precios">
+                        <span class="promo-precio-antes">$46.98</span>
+                        <span class="promo-precio-ahora">$38.00</span>
+                    </div>
+                </div>
+
+                <div class="promo-item">
+                    <span class="promo-badge">Ahorra $14.00</span>
+                    <div class="promo-info">
+                        <span class="promo-nombre">Menú del Chef</span>
+                        <span class="promo-detalle">Chile relleno + Guajalote</span>
+                    </div>
+                    <div class="promo-precios">
+                        <span class="promo-precio-antes">$94.00</span>
+                        <span class="promo-precio-ahora">$80.00</span>
+                    </div>
+                </div>
+
+                <div class="promo-item">
+                    <span class="promo-badge">2x1</span>
+                    <div class="promo-info">
+                        <span class="promo-nombre">Doble Taquiza</span>
+                        <span class="promo-detalle">2 porciones de Tacos dorados</span>
+                    </div>
+                    <div class="promo-precios">
+                        <span class="promo-precio-antes">$41.98</span>
+                        <span class="promo-precio-ahora">$20.99</span>
+                    </div>
+                </div>
+
+                <div class="promo-item">
+                    <span class="promo-badge">Ahorra $16.99</span>
+                    <div class="promo-info">
+                        <span class="promo-nombre">Combo Americano</span>
+                        <span class="promo-detalle">Hamburguesa clásica + Enchiladas verdes</span>
+                    </div>
+                    <div class="promo-precios">
+                        <span class="promo-precio-antes">$90.99</span>
+                        <span class="promo-precio-ahora">$74.00</span>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <!-- CREATE -->
@@ -273,34 +396,6 @@
 
         listar();
     </script>
-
-    <!-- Sección caja -->
-    <div class="menu-container" style="margin-top: 24px;">
-        <div class="menu-header">
-            <h1>Caja</h1>
-            <p>Resumen del pedido</p>
-        </div>
-
-        <div class="seccion">
-            <h2>Ordenar producto</h2>
-            <div class="fila-inputs">
-                <select id="selector-producto" style="flex:1; padding:10px 12px; border:1px solid #ddd; border-radius:8px; font-size:0.9rem; outline:none;"></select>
-                <button onclick="agregarPedido()">Agregar</button>
-            </div>
-        </div>
-
-        <div class="seccion">
-            <h2>Pedidos realizados</h2>
-            <div id="cuerpo-tabla"></div>
-        </div>
-
-        <div class="seccion" style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="margin-bottom: 0;">Total</h2>
-            <span id="total" style="font-size: 1.2rem; font-weight: 700; color: #c0392b;"></span>
-        </div>
-    </div>
-
-    <script src="caja.js"></script>
 
 </body>
 </html>
