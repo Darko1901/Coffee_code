@@ -106,6 +106,22 @@
             border-color: #c0392b;
         }
 
+        select {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: #c0392b;
+        }
+
         button {
             padding: 10px 18px;
             background-color: #c0392b;
@@ -398,10 +414,24 @@
         <!-- LISTA DE PRODUCTOS -->
         <div class="seccion">
             <h2>Lista de productos</h2>
+<<<<<<< HEAD
             <div class="fila-botones">
                 <button onclick="listar()">Mostrar todos</button>
                 <button class="secundario" onclick="listarBaratos()">Cocina económica</button>
                 <button class="secundario" onclick="listarCaros()">Cocina cara</button>
+=======
+            <div class="fila-inputs">
+                <button onclick="listar()">Mostrar todos</button>
+                <button onclick="buscarFilterBaratos()">Cocina economica</button>
+                <button onclick="buscarFilterCaros()">Cocina cara</button>
+                <select id="filtroTipo">
+                    <option value="">-- Tipo --</option>
+                    <option value="comida">Comida</option>
+                    <option value="postre">Postre</option>
+                    <option value="bebida">Bebida</option>
+                </select>
+                <button onclick="buscarFilterPorTipo()">Filtro</button>
+>>>>>>> 85247dc (ahi te va padre santo)
             </div>
             <div id="lista"></div>
         </div>
@@ -437,8 +467,58 @@
 
     </div>
 
+<<<<<<< HEAD
     <!-- ===== COLUMNA DERECHA: CAJA ===== -->
     <div class="caja-container">
+=======
+    <script src="cocina.js"></script>
+    <script>
+        // Sobreescribe listar() para usar tarjetas estilizadas
+        function listar() {
+            let html = "";
+            productoscocina.forEach(p => {
+                html += `
+                    <div class="producto-item">
+                        <div class="producto-info">
+                            <span class="producto-nombre">${p.nombre}</span>
+                            <span class="producto-id">ID: ${p.id}</span>
+                        </div>
+                        <span class="producto-precio">$${p.precio.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+            document.getElementById("lista").innerHTML = html;
+        }
+
+        // Sobreescribe buscar() para usar tarjetas estilizadas
+        function buscar() {
+            const id = parseInt(document.getElementById("buscaId").value);
+            const producto = productoscocina.find(p => p.id === id);
+
+            if (producto) {
+                document.getElementById("resultado").innerHTML = `
+                    <div class="producto-item">
+                        <div class="producto-info">
+                            <span class="producto-nombre">${producto.nombre}</span>
+                            <span class="producto-id">ID: ${producto.id}</span>
+                        </div>
+                        <span class="producto-precio">$${producto.precio.toFixed(2)}</span>
+                    </div>
+                `;
+            } else {
+                document.getElementById("resultado").innerHTML =
+                    `<p class="no-encontrado">Producto no encontrado</p>`;
+            }
+        }
+
+
+
+        listar();
+    </script>
+
+    <!-- Sección caja -->
+    <div class="menu-container" style="margin-top: 24px;">
+>>>>>>> 85247dc (ahi te va padre santo)
         <div class="menu-header">
             <h1>Caja</h1>
             <p>Resumen del pedido</p>
