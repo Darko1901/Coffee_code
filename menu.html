@@ -431,11 +431,11 @@
             <div id="lista"></div>
         </div>
 
-        <!-- BUSCAR POR ID -->
+        <!-- BUSCAR POR NOMBRE -->
         <div class="seccion">
-            <h2>Buscar por ID</h2>
+            <h2>Buscar por nombre</h2>
             <div class="fila-inputs">
-                <input type="number" id="buscaId" placeholder="ID del producto">
+                <input type="text" id="buscaNombre" placeholder="Nombre del producto">
                 <button onclick="buscar()">Buscar</button>
             </div>
             <div id="resultado"></div>
@@ -445,7 +445,7 @@
         <div class="seccion">
             <h2>Actualizar precio</h2>
             <div class="fila-inputs">
-                <input type="number" id="updateId" placeholder="ID del producto">
+                <input type="text" id="updateNombre" placeholder="Nombre del producto">
                 <input type="number" id="updatePrecio" placeholder="Nuevo precio" step="0.01">
                 <button onclick="actualizar(); listar(); actualizarSelect()">Actualizar</button>
             </div>
@@ -455,7 +455,7 @@
         <div class="seccion">
             <h2>Eliminar producto</h2>
             <div class="fila-inputs">
-                <input type="number" id="deleteId" placeholder="ID del producto">
+                <input type="text" id="deleteNombre" placeholder="Nombre del producto">
                 <button onclick="eliminar(); listar(); actualizarSelect()">Eliminar</button>
             </div>
         </div>
@@ -486,8 +486,8 @@
 
         // Sobreescribe buscar() para usar tarjetas estilizadas
         function buscar() {
-            const id = parseInt(document.getElementById("buscaId").value);
-            const producto = productoscocina.find(p => p.id === id);
+            const nombre = document.getElementById("buscaNombre").value.trim().toLowerCase();
+            const producto = productoscocina.find(p => p.nombre.toLowerCase().includes(nombre));
 
             if (producto) {
                 document.getElementById("resultado").innerHTML = `
@@ -587,8 +587,8 @@
     }
 
     function buscar() {
-        const id = parseInt(document.getElementById("buscaId").value);
-        const producto = productoscocina.find(p => p.id === id);
+        const nombre = document.getElementById("buscaNombre").value.trim().toLowerCase();
+        const producto = productoscocina.find(p => p.nombre.toLowerCase().includes(nombre));
         if (producto) {
             document.getElementById("resultado").innerHTML = `
                 <div class="producto-item">
