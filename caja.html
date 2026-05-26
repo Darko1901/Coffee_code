@@ -55,7 +55,11 @@
             if (!cont) return;
             if (!ordenes || ordenes.length === 0) { cont.innerHTML = '<p class="no-encontrado">No hay ordenes</p>'; return; }
             cont.innerHTML = ordenes.map(o => {
-                const itemsHtml = o.items.map(i => `<div style="font-size:0.9rem">${i.nombre} <span style="color:#c0392b;font-weight:700;margin-left:8px">$${i.precio.toFixed(2)}</span></div>`).join('');
+                const itemsHtml = o.items.map(i => `
+                    <div style="font-size:0.9rem;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                        <span>${i.nombre}${i.esPromo ? ' <span style="background:#f5c518;color:#2c2c2c;font-size:0.65rem;padding:1px 5px;border-radius:4px;font-weight:700;margin-left:4px">PROMO</span>' : ''}</span>
+                        <span style="color:#c0392b;font-weight:700">$${i.precio.toFixed(2)}</span>
+                    </div>`).join('');
                 const badgeColor = (function(s){
                     switch(s){ case 'recibido': return '#3498db'; case 'preparando': return '#f39c12'; case 'empacando': return '#8e44ad'; case 'entregando': return '#27ae60'; case 'cancelado': return '#c0392b'; default: return '#7f8c8d'; }
                 })(o.status);

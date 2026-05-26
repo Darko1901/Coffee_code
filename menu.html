@@ -365,60 +365,26 @@
             <p>Gestión de productos de cocina</p>
         </div>
 
-        <!-- PROMOCIONES -->
+        <!-- PROMOCIONES (dinámicas) -->
         <div class="seccion">
             <h2>Promociones del día</h2>
-            <div class="promo-lista">
+            <div class="promo-lista" id="promo-lista"></div>
+        </div>
 
-                <div class="promo-item">
-                    <span class="promo-badge">Ahorra $8.98</span>
-                    <div class="promo-info">
-                        <span class="promo-nombre">Combo Mexicano</span>
-                        <span class="promo-detalle">Enchiladas verdes + Tacos dorados</span>
-                    </div>
-                    <div class="promo-precios">
-                        <span class="promo-precio-antes">$46.98</span>
-                        <span class="promo-precio-ahora">$38.00</span>
-                    </div>
-                </div>
-
-                <div class="promo-item">
-                    <span class="promo-badge">Ahorra $14.00</span>
-                    <div class="promo-info">
-                        <span class="promo-nombre">Menú del Chef</span>
-                        <span class="promo-detalle">Chile relleno + Guajalote</span>
-                    </div>
-                    <div class="promo-precios">
-                        <span class="promo-precio-antes">$94.00</span>
-                        <span class="promo-precio-ahora">$80.00</span>
-                    </div>
-                </div>
-
-                <div class="promo-item">
-                    <span class="promo-badge">2x1</span>
-                    <div class="promo-info">
-                        <span class="promo-nombre">Doble Taquiza</span>
-                        <span class="promo-detalle">2 porciones de Tacos dorados</span>
-                    </div>
-                    <div class="promo-precios">
-                        <span class="promo-precio-antes">$41.98</span>
-                        <span class="promo-precio-ahora">$20.99</span>
-                    </div>
-                </div>
-
-                <div class="promo-item">
-                    <span class="promo-badge">Ahorra $16.99</span>
-                    <div class="promo-info">
-                        <span class="promo-nombre">Combo Americano</span>
-                        <span class="promo-detalle">Hamburguesa clásica + Enchiladas verdes</span>
-                    </div>
-                    <div class="promo-precios">
-                        <span class="promo-precio-antes">$90.99</span>
-                        <span class="promo-precio-ahora">$74.00</span>
-                    </div>
-                </div>
-
+        <!-- CRUD DE PROMOCIONES -->
+        <div class="seccion">
+            <h2>Gestión de promociones</h2>
+            <div class="fila-inputs">
+                <input type="text"   id="promo-nombre"  placeholder="Nombre (ej. Combo Mexicano)">
+                <input type="text"   id="promo-detalle" placeholder="Detalle (ej. Tacos + Enchiladas)">
             </div>
+            <div class="fila-inputs" style="margin-top:8px">
+                <input type="number" id="promo-antes"   placeholder="Precio antes" step="0.01">
+                <input type="number" id="promo-ahora"   placeholder="Precio ahora" step="0.01">
+                <input type="text"   id="promo-badge"   placeholder="Badge (ej. 2x1)">
+                <button onclick="agregarPromo()">Agregar</button>
+            </div>
+            <div id="promo-crud-lista" style="margin-top:12px"></div>
         </div>
 
         <!-- AGREGAR PRODUCTO -->
@@ -688,6 +654,79 @@
 
     listar();
     actualizarSelect();
+
+    // ── PROMOCIONES ──────────────────────────────────────────────
+    const PROMOS_KEY  = 'cc_promos';
+    const PROMOS_SEED = [
+        { id: 1, badge: 'Ahorra $8.98',  nombre: 'Combo Mexicano',  detalle: 'Enchiladas verdes + Tacos dorados',       antes: 46.98, ahora: 38.00 },
+        { id: 2, badge: 'Ahorra $14.00', nombre: 'Menú del Chef',   detalle: 'Chile relleno + Guajalote',               antes: 94.00, ahora: 80.00 },
+        { id: 3, badge: '2x1',           nombre: 'Doble Taquiza',   detalle: '2 porciones de Tacos dorados',            antes: 41.98, ahora: 20.99 },
+        { id: 4, badge: 'Ahorra $16.99', nombre: 'Combo Americano', detalle: 'Hamburguesa clásica + Enchiladas verdes', antes: 90.99, ahora: 74.00 },
+    ];
+
+    function loadPromos() {
+        const raw = localStorage.getItem(PROMOS_KEY);
+        if (!raw) { localStorage.setItem(PROMOS_KEY, JSON.stringify(PROMOS_SEED)); return PROMOS_SEED.slice(); }
+        return JSON.parse(raw);
+    }
+
+    function savePromos(promos) {
+        localStorage.setItem(PROMOS_KEY, JSON.stringify(promos));
+    }
+
+    function renderPromoLista() {
+        const promos = loadPromos();
+        document.getElementById('promo-lista').innerHTML = promos.map(p => `
+            <div class="promo-item">
+                <span class="promo-badge">${p.badge}</span>
+                <div class="promo-info">
+                    <span class="promo-nombre">${p.nombre}</span>
+                    <span class="promo-detalle">${p.detalle}</span>
+                </div>
+                <div class="promo-precios">
+                    <span class="promo-precio-antes">$${p.antes.toFixed(2)}</span>
+                    <span class="promo-precio-ahora">$${p.ahora.toFixed(2)}</span>
+                </div>
+            </div>
+        `).join('') || '<p style="color:#bbb;font-size:0.9rem">No hay promociones</p>';
+
+        document.getElementById('promo-crud-lista').innerHTML = promos.map(p => `
+            <div class="producto-item" style="margin-bottom:8px">
+                <div class="producto-info">
+                    <span class="producto-nombre">${p.nombre}</span>
+                    <span class="producto-id">${p.detalle} · $${p.ahora.toFixed(2)}</span>
+                </div>
+                <button class="secundario" onclick="eliminarPromo(${p.id})">Eliminar</button>
+            </div>
+        `).join('') || '<p style="color:#bbb;font-size:0.9rem">Sin promociones activas</p>';
+    }
+
+    function agregarPromo() {
+        const nombre  = document.getElementById('promo-nombre').value.trim();
+        const detalle = document.getElementById('promo-detalle').value.trim();
+        const antes   = parseFloat(document.getElementById('promo-antes').value) || 0;
+        const ahora   = parseFloat(document.getElementById('promo-ahora').value);
+        const badge   = document.getElementById('promo-badge').value.trim();
+        if (!nombre || isNaN(ahora)) return;
+
+        const promos = loadPromos();
+        const descuento = antes > ahora ? `Ahorra $${(antes - ahora).toFixed(2)}` : badge || 'Oferta';
+        promos.push({ id: Date.now(), badge: badge || descuento, nombre, detalle, antes: antes || ahora, ahora });
+        savePromos(promos);
+
+        ['promo-nombre','promo-detalle','promo-antes','promo-ahora','promo-badge'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        renderPromoLista();
+    }
+
+    function eliminarPromo(id) {
+        savePromos(loadPromos().filter(p => p.id !== id));
+        renderPromoLista();
+    }
+
+    renderPromoLista();
+    // ─────────────────────────────────────────────────────────────
 
     // Persistir ordenesEnviadas en localStorage
     const STORAGE_KEY = 'cc_ordenes';

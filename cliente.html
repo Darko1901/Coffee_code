@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffe Code - Menú</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f0eb;
+            padding: 24px 16px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: #c0392b;
+            color: white;
+            text-align: center;
+            padding: 24px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 { font-size: 1.6rem; }
+        .header p  { font-size: 0.85rem; opacity: 0.85; margin-top: 4px; }
+
+        .seccion {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+
+        .seccion h2 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #c0392b;
+            margin-bottom: 12px;
+        }
+
+        /* Productos del menú */
+        .producto-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border: 1px solid #e8ddd4;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .producto-card:hover { background: #fdf6f0; }
+
+        .p-nombre { font-weight: 600; color: #2c2c2c; }
+        .p-precio { font-weight: 700; color: #c0392b; }
+        .p-tipo   { font-size: 0.75rem; color: #999; margin-top: 2px; }
+
+        /* Carrito */
+        .carrito-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0e8e0;
+            font-size: 0.9rem;
+        }
+
+        .carrito-item:last-child { border-bottom: none; }
+
+        .btn-quitar {
+            background: none;
+            border: none;
+            color: #bbb;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-left: 10px;
+            padding: 2px 4px;
+        }
+
+        .btn-quitar:hover { color: #c0392b; }
+
+        .total-line {
+            text-align: right;
+            font-weight: 700;
+            color: #c0392b;
+            font-size: 1rem;
+            margin-top: 12px;
+        }
+
+        .vacio { color: #bbb; font-size: 0.9rem; text-align: center; padding: 12px 0; }
+
+        /* Botón ordenar */
+        #btn-ordenar {
+            width: 100%;
+            padding: 14px;
+            background: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        #btn-ordenar:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+        }
+
+        #btn-ordenar:not(:disabled):hover { background: #a93226; }
+
+        /* Estado del pedido */
+        #seccion-status { display: none; }
+
+        .estado-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .estado-recibido   { background: #eaf4fb; color: #2980b9; }
+        .estado-preparando { background: #fef9e7; color: #e67e22; }
+        .estado-empacando  { background: #f5eef8; color: #8e44ad; }
+        .estado-entregando { background: #eafaf1; color: #27ae60; }
+        .estado-cancelado  { background: #fdedec; color: #c0392b; }
+
+        .status-hint {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        /* Promociones */
+        .promo-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff8e1;
+            border: 1px solid #f5c518;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .promo-badge {
+            position: absolute;
+            top: -8px; right: 10px;
+            background: #f5c518;
+            color: #2c2c2c;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        .promo-nombre  { font-weight: 600; color: #2c2c2c; font-size: 0.9rem; }
+        .promo-detalle { font-size: 0.75rem; color: #888; margin-top: 2px; }
+        .promo-precio-antes { font-size: 0.75rem; color: #bbb; text-decoration: line-through; }
+        .promo-precio-ahora { font-weight: 700; color: #c0392b; }
+
+        /* Post-entrega */
+        .btn-nueva-orden {
+            width: 100%;
+            padding: 12px;
+            background: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 14px;
+        }
+        .btn-nueva-orden:hover { background: #a93226; }
+        .msg-post { font-size: 0.9rem; color: #555; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Coffe Code</h1>
+    <p>Elige lo que quieres ordenar</p>
+</div>
+
+<!-- Promociones -->
+<div class="seccion" id="seccion-orden">
+    <h2>Promociones del día</h2>
+    <div id="promos"></div>
+
+    <h2 style="margin-top:16px">Menú</h2>
+    <div id="menu"></div>
+</div>
+
+<!-- Carrito -->
+<div class="seccion" id="seccion-carrito">
+    <h2>Tu orden</h2>
+    <div id="carrito"></div>
+    <div class="total-line" id="resumen-total"></div>
+    <br>
+    <button id="btn-ordenar" onclick="ordenar()" disabled>Ordenar</button>
+</div>
+
+<!-- Estado del pedido -->
+<div class="seccion" id="seccion-status">
+    <h2>Estado de tu pedido</h2>
+    <span id="estado-actual" class="estado-badge estado-recibido">Pedido recibido</span>
+    <p class="status-hint">Actualizando automáticamente...</p>
+    <div id="accion-post" style="display:none">
+        <p class="msg-post" id="msg-post"></p>
+        <button class="btn-nueva-orden" onclick="nuevaOrden()">Hacer nueva orden</button>
+    </div>
+</div>
+
+<script src="cocina.js"></script>
+<script>
+    const STORAGE_KEY = 'cc_ordenes';
+    const carrito = [];
+    let miOrdenId = null;
+    let pollingInterval = null;
+
+    const estadoLabels = {
+        recibido:   'Pedido recibido',
+        preparando: 'Preparando tu pedido',
+        empacando:  'Empacando',
+        entregando: '¡Listo para recoger!',
+        cancelado:  'Pedido cancelado'
+    };
+
+    function loadPromos() {
+        const raw = localStorage.getItem('cc_promos');
+        return raw ? JSON.parse(raw) : [];
+    }
+
+    function renderPromos() {
+        const promos = loadPromos();
+        const cont = document.getElementById('promos');
+        if (promos.length === 0) { cont.innerHTML = ''; return; }
+        cont.innerHTML = promos.map(p => `
+            <div class="promo-card" onclick="agregarPromoAlCarrito(${p.id})" style="cursor:pointer">
+                <span class="promo-badge">${p.badge}</span>
+                <div>
+                    <div class="promo-nombre">${p.nombre}</div>
+                    <div class="promo-detalle">${p.detalle}</div>
+                </div>
+                <div style="text-align:right">
+                    <div class="promo-precio-antes">$${p.antes.toFixed(2)}</div>
+                    <div class="promo-precio-ahora">$${p.ahora.toFixed(2)}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function agregarPromoAlCarrito(id) {
+        const p = loadPromos().find(x => x.id === id);
+        if (!p) return;
+        carrito.push({ id: p.id, nombre: p.nombre, precio: p.ahora, esPromo: true });
+        renderCarrito();
+    }
+
+    // Escucha cambios hechos desde otra pestaña (menu.html/cocina)
+    window.addEventListener('storage', e => {
+        if (e.key === 'productoscocina' && e.newValue) {
+            const nuevos = JSON.parse(e.newValue);
+            productoscocina.length = 0;
+            nuevos.forEach(p => productoscocina.push(p));
+            renderMenu();
+        }
+        if (e.key === 'cc_promos') renderPromos();
+    });
+
+    function renderMenu() {
+        document.getElementById('menu').innerHTML = productoscocina.map(p => `
+            <div class="producto-card" onclick="agregarAlCarrito(${p.id})">
+                <div>
+                    <div class="p-nombre">${p.nombre}</div>
+                    <div class="p-tipo">${p.tipo}</div>
+                </div>
+                <span class="p-precio">$${p.precio.toFixed(2)}</span>
+            </div>
+        `).join('');
+    }
+
+    function agregarAlCarrito(id) {
+        const p = productoscocina.find(x => x.id === id);
+        if (p) { carrito.push(p); renderCarrito(); }
+    }
+
+    function quitarDelCarrito(i) {
+        carrito.splice(i, 1);
+        renderCarrito();
+    }
+
+    function renderCarrito() {
+        const cont = document.getElementById('carrito');
+        if (carrito.length === 0) {
+            cont.innerHTML = '<p class="vacio">Toca un producto para agregarlo</p>';
+            document.getElementById('btn-ordenar').disabled = true;
+            document.getElementById('resumen-total').textContent = '';
+            return;
+        }
+        cont.innerHTML = carrito.map((p, i) => `
+            <div class="carrito-item">
+                <span>${p.nombre}</span>
+                <div>
+                    <span class="p-precio">$${p.precio.toFixed(2)}</span>
+                    <button class="btn-quitar" onclick="quitarDelCarrito(${i})">✕</button>
+                </div>
+            </div>
+        `).join('');
+        const subtotal = carrito.reduce((s, p) => s + p.precio, 0);
+        document.getElementById('resumen-total').textContent =
+            `Total (IVA inc.): $${(subtotal * 1.16).toFixed(2)}`;
+        document.getElementById('btn-ordenar').disabled = false;
+    }
+
+    function ordenar() {
+        if (carrito.length === 0) return;
+        const subtotal = carrito.reduce((s, p) => s + p.precio, 0);
+        const iva = subtotal * 0.16;
+        const orden = {
+            id: Date.now(),
+            items: carrito.slice(),
+            subtotal, iva,
+            total: subtotal + iva,
+            status: 'recibido',
+            createdAt: Date.now()
+        };
+        miOrdenId = orden.id;
+
+        // Escribir en localStorage para que caja.html lo vea
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const ordenes = raw ? JSON.parse(raw) : [];
+        ordenes.unshift(orden);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(ordenes));
+
+        carrito.length = 0;
+        renderCarrito();
+        document.getElementById('seccion-orden').style.display = 'none';
+        document.getElementById('seccion-carrito').style.display = 'none';
+        document.getElementById('seccion-status').style.display = 'block';
+        mostrarStatus('recibido');
+
+        // Polling cada 3s para ver si caja actualizó el estado
+        pollingInterval = setInterval(checkStatus, 3000);
+    }
+
+    function checkStatus() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const orden = JSON.parse(raw).find(o => o.id === miOrdenId);
+        if (!orden) return;
+        mostrarStatus(orden.status);
+        if (orden.status === 'entregando' || orden.status === 'cancelado') {
+            clearInterval(pollingInterval);
+            document.getElementById('status-hint') &&
+                (document.querySelector('.status-hint').textContent = '');
+        }
+    }
+
+    function mostrarStatus(status) {
+        const el = document.getElementById('estado-actual');
+        el.textContent = estadoLabels[status] || status;
+        el.className   = `estado-badge estado-${status}`;
+
+        if (status === 'entregando') {
+            clearInterval(pollingInterval);
+            document.querySelector('.status-hint').textContent = '';
+            document.getElementById('msg-post').textContent = 'Gracias por tu visita. Esperamos verte pronto.';
+            document.getElementById('accion-post').style.display = 'block';
+        } else if (status === 'cancelado') {
+            clearInterval(pollingInterval);
+            document.querySelector('.status-hint').textContent = '';
+            document.getElementById('msg-post').textContent = 'Disculpa los inconvenientes.';
+            document.getElementById('accion-post').style.display = 'block';
+        }
+    }
+
+    function nuevaOrden() {
+        miOrdenId = null;
+        clearInterval(pollingInterval);
+        document.getElementById('seccion-status').style.display = 'none';
+        document.getElementById('accion-post').style.display = 'none';
+        document.getElementById('seccion-orden').style.display = 'block';
+        document.getElementById('seccion-carrito').style.display = 'block';
+    }
+
+    renderPromos();
+    renderMenu();
+    renderCarrito();
+</script>
+
+</body>
+</html>
