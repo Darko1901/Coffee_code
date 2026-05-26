@@ -219,6 +219,12 @@
             font-size: 0.9rem;
         }
 
+        .pedido-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
         .pedido-nombre {
             font-weight: 600;
             color: #2c2c2c;
@@ -228,6 +234,20 @@
             font-weight: 700;
             color: #c0392b;
         }
+
+        .estado-pedido {
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            width: fit-content;
+        }
+        .estado-recibido  { background: #eaf4fb; color: #2980b9; }
+        .estado-empacando { background: #fef9e7; color: #e67e22; }
+        .estado-entregado { background: #eafaf1; color: #27ae60; }
+        .estado-cancelado { background: #fdedec; color: #c0392b; }
 
         /* Totales */
         .seccion-total {
@@ -557,6 +577,35 @@
 <script src="cocina.js"></script>
 <script>
     const pedidos = [];
+    let pedidoCounter = 0;
+
+    // Envuelve setTimeout en una Promise para poder usar await
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Progresa el estado de un pedido de forma asíncrona
+    async function progresarEstado(pedidoId) {
+        const transiciones = [
+            { texto: 'Empacando',        clase: 'estado-empacando', espera: 3000 },
+            { texto: 'Pedido entregado', clase: 'estado-entregado', espera: 4000 },
+        ];
+
+        for (const { texto, clase, espera } of transiciones) {
+            await delay(espera);
+            const pedido = pedidos.find(p => p.pedidoId === pedidoId);
+            if (!pedido) break;
+            pedido.estado      = texto;
+            pedido.estadoClase = clase;
+            const el = document.getElementById(`pedido-${pedidoId}`);
+            if (!el) break;
+            const badge = el.querySelector('.estado-pedido');
+            if (badge) {
+                badge.textContent = texto;
+                badge.className   = `estado-pedido ${clase}`;
+            }
+        }
+    }
 
     function renderLista(productos) {
         let html = "";
@@ -616,8 +665,10 @@
         const id = parseInt(document.getElementById("selectProducto").value);
         const producto = productoscocina.find(p => p.id === id);
         if (!producto) return;
-        pedidos.push(producto);
+        const pedidoId = ++pedidoCounter;
+        pedidos.push({ ...producto, pedidoId, estado: 'Pedido recibido', estadoClase: 'estado-recibido' });
         renderPedidos();
+        progresarEstado(pedidoId); // async: no bloquea, corre en segundo plano
     }
 
     function renderPedidos() {
@@ -626,8 +677,11 @@
             contenedor.innerHTML = "";
         } else {
             contenedor.innerHTML = pedidos.map(p => `
-                <div class="pedido-item">
-                    <span class="pedido-nombre">${p.nombre}</span>
+                <div class="pedido-item" id="pedido-${p.pedidoId}">
+                    <div class="pedido-info">
+                        <span class="pedido-nombre">${p.nombre}</span>
+                        <span class="estado-pedido ${p.estadoClase}">${p.estado}</span>
+                    </div>
                     <span class="pedido-precio">$${p.precio.toFixed(2)}</span>
                 </div>
             `).join("");
