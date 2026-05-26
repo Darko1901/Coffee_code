@@ -3,27 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <title>Caja - Coffe Code</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box }
+        body { font-family: 'Segoe UI', sans-serif; background:#f5f0eb; padding:24px; }
+        .menu-header { background:#c0392b; color:#fff; text-align:center; padding:20px; border-radius:8px; }
+        .menu-header h1 { margin-bottom:4px }
+        .seccion { background:#fff; border-radius:8px; padding:16px; margin-top:12px; border:1px solid #ece5de }
+        .pedido-item { background:#fdf6f0; border:1px solid #e8ddd4; border-radius:8px; padding:10px; margin-bottom:10px }
+        .no-encontrado { color:#999; padding:8px }
+        button { padding:8px 12px; background:#c0392b; color:#fff; border:none; border-radius:6px; cursor:pointer }
+        button.secundario { background:#fff; color:#c0392b; border:1.5px solid #c0392b }
+    </style>
 </head>
 <body>
 
     <h1>Caja - Coffe Code</h1>
 
     <h2>Pedidos realizados:</h2>
-    <table id="tabla-pedidos" border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Producto</th>
-                <th>Precio</th>
-            </tr>
-        </thead>
-        <tbody id="cuerpo-tabla"></tbody>
-    </table>
-
-    <p id="total"></p>
+    <div class="seccion">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+                <h3 style="margin:0">Resumen</h3>
+                <div style="font-size:0.9rem;color:#777">Ver ordenes y sus estados</div>
+            </div>
+            <div>
+                <button onclick="reloadOrdenes()">Refrescar</button>
+            </div>
+        </div>
+        <div id="ordenes"></div>
+    </div>
 
     <script src="cocina.js"></script>
-    <script src="caja.js"></script>
+    <script>
+        // Leer ordenes desde localStorage (misma clave que menu.html)
+        const STORAGE_KEY = 'cc_ordenes';
+        let ordenes = [];
+
+        function loadOrdenes() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                ordenes = raw ? JSON.parse(raw) : [];
+            } catch(e) { ordenes = []; }
+        }
+
+        function saveOrdenes() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(ordenes)); } catch(e) { console.warn(e); }
+        }
+
+        function renderOrdenesCaja() {
+            const cont = document.getElementById('ordenes');
+            if (!cont) return;
+            if (!ordenes || ordenes.length === 0) { cont.innerHTML = '<p class="no-encontrado">No hay ordenes</p>'; return; }
+            cont.innerHTML = ordenes.map(o => {
+                const itemsHtml = o.items.map(i => `<div style="font-size:0.9rem">${i.nombre} <span style="color:#c0392b;font-weight:700;margin-left:8px">$${i.precio.toFixed(2)}</span></div>`).join('');
+                const badgeColor = (function(s){
+                    switch(s){ case 'recibido': return '#3498db'; case 'preparando': return '#f39c12'; case 'empacando': return '#8e44ad'; case 'entregando': return '#27ae60'; case 'cancelado': return '#c0392b'; default: return '#7f8c8d'; }
+                })(o.status);
+                return `
+                    <div class="pedido-item">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <div>
+                                <div style="font-weight:700;color:#2c2c2c">Orden #${o.id}</div>
+                                <div style="font-size:0.85rem;color:#777">${new Date(o.createdAt).toLocaleString()}</div>
+                            </div>
+                            <div>
+                                <span style="background:${badgeColor};color:#fff;padding:6px 10px;border-radius:12px;font-size:0.85rem;text-transform:capitalize">${o.status}</span>
+                            </div>
+                        </div>
+                        <div style="background:#fff8f5;border-radius:8px;padding:8px;margin-top:8px">${itemsHtml}</div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                            <div style="font-weight:700;color:#c0392b">Total: $${o.total.toFixed(2)}</div>
+                            <div style="display:flex;gap:8px">
+                                <button onclick="simular(${o.id})" class="secundario">Simular</button>
+                                <button onclick="cancelar(${o.id})" class="secundario">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function reloadOrdenes(){ loadOrdenes(); renderOrdenesCaja(); }
+
+        function setStatus(id, status){
+            const o = ordenes.find(x=>x.id===id);
+            if(!o) return; o.status = status; saveOrdenes(); renderOrdenesCaja();
+        }
+
+        function simular(id){ setStatus(id,'preparando'); setTimeout(()=>setStatus(id,'empacando'),1000); setTimeout(()=>setStatus(id,'entregando'),2000); }
+        function cancelar(id){ setStatus(id,'cancelado'); }
+
+        // init
+        loadOrdenes(); renderOrdenesCaja();
+    </script>
 
 </body>
 </html>

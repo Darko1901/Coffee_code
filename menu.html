@@ -562,6 +562,16 @@
             <div id="pedidos"></div>
         </div>
 
+        <!-- ACCIONES DE PEDIDO -->
+        <div class="seccion">
+            <h2>Acciones</h2>
+            <div class="fila-inputs">
+                <button onclick="enviarPedido()">Enviar pedido</button>
+                <button onclick="simularProgresoLocal()">Simular progreso</button>
+                <button onclick="cancelarPedidoLocal()">Cancelar pedido</button>
+            </div>
+        </div>
+
         <!-- SUBTOTAL -->
         <div class="seccion-total">
             <h2>Subtotal</h2>
@@ -587,35 +597,8 @@
 <script src="cocina.js"></script>
 <script>
     const pedidos = [];
-    let pedidoCounter = 0;
-
-    // Envuelve setTimeout en una Promise para poder usar await
-    function delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    // Progresa el estado de un pedido de forma asíncrona
-    async function progresarEstado(pedidoId) {
-        const transiciones = [
-            { texto: 'Empacando',        clase: 'estado-empacando', espera: 3000 },
-            { texto: 'Pedido entregado', clase: 'estado-entregado', espera: 4000 },
-        ];
-
-        for (const { texto, clase, espera } of transiciones) {
-            await delay(espera);
-            const pedido = pedidos.find(p => p.pedidoId === pedidoId);
-            if (!pedido) break;
-            pedido.estado      = texto;
-            pedido.estadoClase = clase;
-            const el = document.getElementById(`pedido-${pedidoId}`);
-            if (!el) break;
-            const badge = el.querySelector('.estado-pedido');
-            if (badge) {
-                badge.textContent = texto;
-                badge.className   = `estado-pedido ${clase}`;
-            }
-        }
-    }
+    const ordenesEnviadas = [];
+    let ultimoPedido = null;
 
     function renderLista(productos) {
         let html = "";
@@ -675,10 +658,8 @@
         const id = parseInt(document.getElementById("selectProducto").value);
         const producto = productoscocina.find(p => p.id === id);
         if (!producto) return;
-        const pedidoId = ++pedidoCounter;
-        pedidos.push({ ...producto, pedidoId, estado: 'Pedido recibido', estadoClase: 'estado-recibido' });
+        pedidos.push(producto);
         renderPedidos();
-        progresarEstado(pedidoId); // async: no bloquea, corre en segundo plano
     }
 
     function renderPedidos() {
@@ -687,10 +668,9 @@
             contenedor.innerHTML = "";
         } else {
             contenedor.innerHTML = pedidos.map(p => `
-                <div class="pedido-item" id="pedido-${p.pedidoId}">
+                <div class="pedido-item">
                     <div class="pedido-info">
                         <span class="pedido-nombre">${p.nombre}</span>
-                        <span class="estado-pedido ${p.estadoClase}">${p.estado}</span>
                     </div>
                     <span class="pedido-precio">$${p.precio.toFixed(2)}</span>
                 </div>
@@ -708,6 +688,115 @@
 
     listar();
     actualizarSelect();
+
+    // Persistir ordenesEnviadas en localStorage
+    const STORAGE_KEY = 'cc_ordenes';
+    function saveOrdenes() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(ordenesEnviadas)); } catch(e) { console.warn('No se pudo guardar ordenes', e); }
+    }
+    function loadOrdenes() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const arr = JSON.parse(raw);
+            if (Array.isArray(arr)) {
+                ordenesEnviadas.length = 0;
+                arr.forEach(a => ordenesEnviadas.push(a));
+            }
+        } catch(e) { console.warn('Error al cargar ordenes', e); }
+    }
+    // cargar al inicio
+    loadOrdenes();
+
+    // Render ordenes enviadas en la interfaz (tarjetas)
+    function renderOrdenes() {
+        const cont = document.getElementById('ordenes');
+        if (!cont) return;
+        if (ordenesEnviadas.length === 0) { cont.innerHTML = '<p class="no-encontrado">No hay ordenes enviadas</p>'; return; }
+        cont.innerHTML = ordenesEnviadas.map(o => {
+            const itemsHtml = o.items.map(i => `<div style="font-size:0.9rem">${i.nombre} <span style="color:#c0392b;font-weight:700;margin-left:8px">$${i.precio.toFixed(2)}</span></div>`).join('');
+            const badgeColor = (function(s){
+                switch(s){
+                    case 'recibido': return '#3498db';
+                    case 'preparando': return '#f39c12';
+                    case 'empacando': return '#8e44ad';
+                    case 'entregando': return '#27ae60';
+                    case 'cancelado': return '#c0392b';
+                    default: return '#7f8c8d';
+                }
+            })(o.status);
+            return `
+                <div class="pedido-item" style="display:flex;flex-direction:column;gap:8px">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div>
+                            <div style="font-weight:700;color:#2c2c2c">Orden #${o.id}</div>
+                            <div style="font-size:0.85rem;color:#777">${new Date(o.createdAt).toLocaleString()}</div>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <span style="background:${badgeColor};color:#fff;padding:6px 10px;border-radius:12px;font-size:0.85rem;text-transform:capitalize">${o.status}</span>
+                        </div>
+                    </div>
+                    <div style="background:#fff8f5;border-radius:8px;padding:8px">${itemsHtml}</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div style="font-weight:700;color:#c0392b">Total: $${o.total.toFixed(2)}</div>
+                        <div style="display:flex;gap:8px">
+                            <button onclick="simularProgresoLocal(${o.id})" class="secundario">Simular</button>
+                            <button onclick="cancelarPedidoLocal(${o.id})" class="secundario">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function enviarPedido() {
+        if (pedidos.length === 0) { alert('No hay productos en el pedido'); return null; }
+        const subtotal = pedidos.reduce((sum, p) => sum + p.precio, 0);
+        const iva = subtotal * 0.16;
+        const total = subtotal + iva;
+        const id = Date.now();
+        const pedido = { id, items: pedidos.slice(), subtotal, iva, total, status: 'recibido', createdAt: Date.now() };
+        ordenesEnviadas.unshift(pedido);
+        ultimoPedido = pedido;
+        pedidos.length = 0; // limpiar
+        renderPedidos();
+        renderOrdenes();
+        saveOrdenes();
+    }
+
+    function setOrderStatus(id, status) {
+        const o = ordenesEnviadas.find(x => x.id === id);
+        if (!o) return;
+        o.status = status;
+        renderOrdenes();
+        saveOrdenes();
+    }
+
+    function simularProgresoLocal(idOrDefault, intervalMs = 1000) {
+        const id = typeof idOrDefault === 'number' ? idOrDefault : (ultimoPedido ? ultimoPedido.id : null);
+        if (!id) { alert('Primero enviar un pedido'); return; }
+        setOrderStatus(id, 'preparando');
+        setTimeout(() => setOrderStatus(id, 'empacando'), intervalMs);
+        setTimeout(() => setOrderStatus(id, 'entregando'), intervalMs * 2);
+    }
+
+    function cancelarPedidoLocal(idOrDefault) {
+        const id = typeof idOrDefault === 'number' ? idOrDefault : (ultimoPedido ? ultimoPedido.id : null);
+        if (!id) { alert('No hay pedido para cancelar'); return; }
+        setOrderStatus(id, 'cancelado');
+    }
+
+    // Crear espacio para ordenes en el DOM si no existe
+    (function(){
+        const caja = document.querySelector('.caja-container');
+        if (caja) {
+            const bloque = document.createElement('div');
+            bloque.className = 'seccion';
+            bloque.innerHTML = '<h2>Ordenes enviadas</h2><div id="ordenes"></div>';
+            caja.appendChild(bloque);
+            renderOrdenes();
+        }
+    })();
 </script>
 
 </body>
