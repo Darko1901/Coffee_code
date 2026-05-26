@@ -11,6 +11,9 @@ let productoscocina = [
     { id: 10, nombre: "coca Sin Azucar",precio: 68.50, tipo: "bebida" },
 ];
 
+// Limpiar localStorage para resetear
+localStorage.removeItem("productoscocina");
+
 
 const guardados = localStorage.getItem("productoscocina");
 if (guardados) {
@@ -30,7 +33,7 @@ function agregar() {
     if (!nombre || !precio) return;
 
     const nuevoId = Math.max(...productoscocina.map(p => p.id)) + 1;
-    productoscocina.push({ id: nuevoId, nombre, precio });
+    productoscocina.push({ id: nuevoId, nombre, precio, tipo: "comida" });
     guardarStorage();
 
     document.getElementById("nombre").value = "";
@@ -97,7 +100,12 @@ function buscarFilterCaros() {
 
 function buscarFilterPorTipo() {
     const tipo = document.getElementById("filtroTipo").value;
+    console.log("Tipo seleccionado:", tipo);
+    console.log("Productos disponibles:", productoscocina);
+    
     const porTipo = productoscocina.filter(p => p.tipo === tipo);
+    console.log("Productos filtrados:", porTipo);
+    
     let html = "";
     
     porTipo.forEach(p => {
@@ -112,7 +120,7 @@ function buscarFilterPorTipo() {
         `;
     });
     
-    document.getElementById("lista").innerHTML = html || "<p>Sin resultados</p>";
+    document.getElementById("lista").innerHTML = html || "<p>Selecciona un tipo</p>";
 }
 
 
