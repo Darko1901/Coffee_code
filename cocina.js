@@ -49,8 +49,8 @@ function listar() {
 }
 
 function buscar() {
-    const id = parseInt(document.getElementById("buscaId").value);
-    const producto = productoscocina.find(p => p.id === id);
+    const nombre = document.getElementById("buscaNombre").value.trim().toLowerCase();
+    const producto = productoscocina.find(p => p.nombre.toLowerCase().includes(nombre));
 
     if (producto) {
         document.getElementById("resultado").innerHTML =
@@ -125,25 +125,25 @@ function buscarFilterPorTipo() {
 
 
 function actualizar() {
-    const id = parseInt(document.getElementById("updateId").value);
+    const nombre = document.getElementById("updateNombre").value.trim().toLowerCase();
     const nuevoPrecio = parseFloat(document.getElementById("updatePrecio").value);
 
-    const producto = productoscocina.find(p => p.id === id);
+    const producto = productoscocina.find(p => p.nombre.toLowerCase() === nombre);
     if (producto) {
         producto.precio = nuevoPrecio;
         guardarStorage();
-        document.getElementById("updateId").value = "";
+        document.getElementById("updateNombre").value = "";
         document.getElementById("updatePrecio").value = "";
     }
 }
 
 function eliminar() {
-    const id = parseInt(document.getElementById("deleteId").value);
-    const index = productoscocina.findIndex(p => p.id === id);
+    const nombre = document.getElementById("deleteNombre").value.trim().toLowerCase();
+    const index = productoscocina.findIndex(p => p.nombre.toLowerCase() === nombre);
 
     if (index !== -1) {
         productoscocina.splice(index, 1);
         guardarStorage();
-        document.getElementById("deleteId").value = "";
+        document.getElementById("deleteNombre").value = "";
     }
 }
