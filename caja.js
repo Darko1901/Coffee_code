@@ -49,3 +49,63 @@ function actualizarVista() {
     document.getElementById("iva").textContent      = "$" + iva.toFixed(2);
     document.getElementById("total").textContent    = "$" + total.toFixed(2);
 }
+
+// Callbacks de estado de pedido
+const pedidoCallbacks = {
+    recibido: [],
+    preparando: [],
+    empacando: [],
+    entregando: [],
+    cancelado: []
+};
+
+function onPedido(estado, cb) {
+    if (!pedidoCallbacks.hasOwnProperty(estado)) {
+        console.warn("Estado desconocido:", estado);
+        return;
+    }
+    if (typeof cb !== 'function') return;
+    pedidoCallbacks[estado].push(cb);
+}
+
+function triggerPedidoStatus(estado, detalle) {
+    if (!pedidoCallbacks.hasOwnProperty(estado)) {
+        console.warn("Estado desconocido:", estado);
+        return;
+    }
+    pedidoCallbacks[estado].forEach(fn => {
+        try { fn(detalle); } catch (e) { console.error('Callback error', e); }
+    });
+}
+
+// Crear y enviar pedido: dispara 'recibido' y limpia la caja local
+function enviarPedido() {
+    if (pedidos.length === 0) { console.warn('No hay productos en el pedido'); return null; }
+    const pedido = {
+        id: Date.now(),
+        items: pedidos.slice(),
+        total
+    };
+    pedidos = [];
+    actualizarVista();
+    triggerPedidoStatus('recibido', pedido);
+    return pedido;
+}
+
+// Simular progresion de estados (opcional): preparar -> empacar -> entregar
+function simularProgreso(pedido, intervalMs = 2000) {
+    setTimeout(() => triggerPedidoStatus('preparando', pedido), intervalMs);
+    setTimeout(() => triggerPedidoStatus('empacando', pedido), intervalMs * 2);
+    setTimeout(() => triggerPedidoStatus('entregando', pedido), intervalMs * 3);
+}
+
+function cancelarPedido(pedido) {
+    triggerPedidoStatus('cancelado', pedido);
+}
+
+// Exponer API global para que otras partes puedan registrarse o disparar
+window.pedidoOn = onPedido;
+window.triggerPedidoStatus = triggerPedidoStatus;
+window.enviarPedido = enviarPedido;
+window.simularProgreso = simularProgreso;
+window.cancelarPedido = cancelarPedido;
