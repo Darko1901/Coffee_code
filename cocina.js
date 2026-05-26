@@ -147,3 +147,49 @@ function eliminar() {
         document.getElementById("deleteNombre").value = "";
     }
 }
+
+
+
+function prepararCafe() {
+    document.getElementById("resultado-cafe").innerHTML = "";
+    
+    const random = Math.floor(Math.random() * 100);
+    
+    if (random < 60) {
+        
+        new Promise((resolve) => {
+            setTimeout(() => resolve("Agua calentada"), 1000);
+        })
+        .then(msg => {
+            document.getElementById("resultado-cafe").innerHTML += `<p>${msg}</p>`;
+            return new Promise(res => setTimeout(() => res("Cafe molido"), 1000));
+        })
+        .then(msg => {
+            document.getElementById("resultado-cafe").innerHTML += `<p>${msg}</p>`;
+            return new Promise(res => setTimeout(() => res("Cafe vertido"), 1000));
+        })
+        .then(msg => {
+            document.getElementById("resultado-cafe").innerHTML += `<p>${msg}</p>`;
+            document.getElementById("resultado-cafe").innerHTML += `<p style='color: green; font-weight: bold;'>¡Cafe listo!</p>`;
+        });
+    } else if (random < 80) {
+        
+        new Promise((resolve, reject) => {
+            setTimeout(() => reject("Error en la cocina: Maquina descompuesta"), 1000);
+        })
+        .catch(error => {
+            document.getElementById("resultado-cafe").innerHTML = `<p style='color: red;'>${error}</p>`;
+        });
+    } else {
+    
+        const ingredientes = ["Cafe", "Agua", "Azucar", "Leche"];
+        const falta = ingredientes[Math.floor(Math.random() * ingredientes.length)];
+        
+        new Promise((resolve, reject) => {
+            setTimeout(() => reject("Falta ingrediente: " + falta), 1000);
+        })
+        .catch(error => {
+            document.getElementById("resultado-cafe").innerHTML = `<p style='color: red;'>${error}</p>`;
+        });
+    }
+}

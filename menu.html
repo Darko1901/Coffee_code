@@ -219,6 +219,12 @@
             font-size: 0.9rem;
         }
 
+        .pedido-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
         .pedido-nombre {
             font-weight: 600;
             color: #2c2c2c;
@@ -228,6 +234,20 @@
             font-weight: 700;
             color: #c0392b;
         }
+
+        .estado-pedido {
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            width: fit-content;
+        }
+        .estado-recibido  { background: #eaf4fb; color: #2980b9; }
+        .estado-empacando { background: #fef9e7; color: #e67e22; }
+        .estado-entregado { background: #eafaf1; color: #27ae60; }
+        .estado-cancelado { background: #fdedec; color: #c0392b; }
 
         /* Totales */
         .seccion-total {
@@ -460,7 +480,17 @@
             </div>
         </div>
 
+        <!-- PROMESAS: PREPARACIÓN DE CAFÉ -->
+        <div class="seccion">
+            <h2>Preparacion de Cafe</h2>
+            <div class="fila-botones">
+                <button onclick="prepararCafe()">Preparar Cafe</button>
+            </div>
+            <div id="resultado-cafe" style="margin-top: 12px; padding: 12px; background-color: #f9f6f3; border-radius: 8px; border-left: 4px solid #c0392b; font-size: 0.9rem;"></div>
+        </div>
+
     </div>
+
 
     <!-- ===== COLUMNA DERECHA: CAJA ===== -->
     <div class="caja-container">
@@ -639,7 +669,9 @@
         } else {
             contenedor.innerHTML = pedidos.map(p => `
                 <div class="pedido-item">
-                    <span class="pedido-nombre">${p.nombre}</span>
+                    <div class="pedido-info">
+                        <span class="pedido-nombre">${p.nombre}</span>
+                    </div>
                     <span class="pedido-precio">$${p.precio.toFixed(2)}</span>
                 </div>
             `).join("");
